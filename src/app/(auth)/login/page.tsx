@@ -1,32 +1,44 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Typography, TextField, Button, Box } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const { data: session } = useSession();
 
-  const handleSubmit = async (e: any) => {
+  // Redirect if already logged in
+  useEffect(() => {
+    if (session) {
+      router.push("/chat");
+    }
+  }, [session, router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+    const result = await signIn("credentials", {
+      redirect: false,
+      username,
+      password,
     });
 
-    if (response.ok) {
-      router.push("/dashboard"); // Redirect to dashboard or home page after successful login
+    if (result?.error) {
+      setError("Invalid username or password");
     } else {
-      const data = await response.json();
-      setError(data.error || "An error occurred during login");
+      router.push("/chat");
     }
   };
+
+  if (session) {
+    return null; // or a loading indicator
+  }
 
   return (
     <Box sx={{ maxWidth: 400, margin: "auto", mt: 4 }}>
