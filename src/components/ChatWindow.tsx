@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMessages } from "@/lib/redux/slices/chatSlice";
+import { fetchMessages } from "@/redux/slices/chatSlice";
 import { Box, Typography } from "@mui/material";
 
 const ChatWindow = ({ chatId }) => {
