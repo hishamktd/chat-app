@@ -10,19 +10,11 @@ import {
   Paper,
 } from "@mui/material";
 import dayjs from "dayjs";
-import { io } from "socket.io-client";
-
-type Message = {
-  id: number;
-  user: string;
-  text: string;
-  created_at: string;
-};
-
-const socket = io(); // Connect to the Socket.io server
+import { baseUrl } from "@/lib/configs";
+import { TMessage } from "@/types/message";
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<TMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
 
   const handleSendMessage = async () => {
@@ -42,26 +34,15 @@ export default function ChatPage() {
     }
   };
 
+  const fetchMessages = async () => {
+    const response = await fetch("/api/chat-room");
+    const data: TMessage[] = await response.json();
+    setMessages(data);
+  };
+
   useEffect(() => {
-    // Fetch initial messages
-    const fetchMessages = async () => {
-      const response = await fetch("/api/chat-room");
-      const data: Message[] = await response.json();
-      setMessages(data);
-    };
-
     fetchMessages();
-
-    // Listen for new messages
-    socket.on("new_message", (message: Message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
-
-    // Cleanup
-    return () => {
-      socket.off("new_message");
-    };
-  }, []);
+  }, [inputValue]);
 
   return (
     <Box sx={{ p: 4 }}>
@@ -78,7 +59,7 @@ export default function ChatPage() {
             <ListItem key={message.id}>
               <Box>
                 <Typography variant="subtitle2">
-                  {message.user} -{" "}
+                  {message.user.username} -{" "}
                   <span style={{ color: "gray" }}>
                     {dayjs(message.created_at).format("HH:mm A")}
                   </span>
