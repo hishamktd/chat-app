@@ -1,4 +1,3 @@
-import React, { Fragment, ReactNode } from "react";
 import {
   Box,
   AppBar as AppBarComponent,
@@ -6,8 +5,9 @@ import {
   Typography,
   Container,
   Grid2,
-} from "@mui/material";
-import Link from "next/link";
+} from '@mui/material';
+import Link from 'next/link';
+import React, { Fragment, ReactNode } from 'react';
 
 type LayoutProps = {
   children: ReactNode;
@@ -16,9 +16,8 @@ type LayoutProps = {
 const AppBar = ({ children }: LayoutProps) => {
   return (
     <Fragment>
-      {/* Navigation Bar */}
       <AppBarComponent position="static">
-        <Toolbar sx={{ justifyContent: "space-between" }}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Grid2 container gap={2} alignItems="center">
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
               <Link href="/" passHref>
@@ -38,7 +37,6 @@ const AppBar = ({ children }: LayoutProps) => {
         </Toolbar>
       </AppBarComponent>
 
-      {/* Main Content */}
       <Container sx={{ mt: 4 }}>
         <Box>{children}</Box>
       </Container>

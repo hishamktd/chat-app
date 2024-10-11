@@ -1,12 +1,7 @@
-import { configureStore } from "@reduxjs/toolkit";
-// import authReducer from "@/redux/slices/authSlice";
-// import chatReducer from "@/redux/slices/chatSlice";
+import { configureStore } from '@reduxjs/toolkit';
 
 export const store = configureStore({
-  reducer: {
-    // auth: authReducer,
-    // chat: chatReducer,
-  },
+  reducer: {},
 });
 
 export type RootState = ReturnType<typeof store.getState>;

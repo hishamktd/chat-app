@@ -1,4 +1,4 @@
-import { TUser } from "./user";
+import { TUser } from './user';
 
 export type TMessage = {
   id: number;

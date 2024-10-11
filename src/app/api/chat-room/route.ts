@@ -1,16 +1,14 @@
-// app/api/chat/route.ts
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // Import your NextAuth auth options
-import { Pool } from "pg";
-import { getUserById } from "@/app/api/services/userService";
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { Pool } from 'pg';
 
-// Initialize the PostgreSQL connection pool
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getUserById } from '@/app/api/services/userService';
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// Get messages
 export async function GET() {
   try {
     const result = await pool.query(`
@@ -38,26 +36,25 @@ export async function GET() {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Error retrieving messages." },
+      { error: 'Error retrieving messages.' },
       { status: 500 }
     );
   }
 }
 
-// Post a new message
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { text } = await req.json();
-  const userId = session.user.id; // Get the logged-in user's ID
+  const userId = session.user.id;
 
   try {
     const result = await pool.query(
-      "INSERT INTO chat_room_messages (userId, text) VALUES ($1, $2) RETURNING *",
+      'INSERT INTO chat_room_messages (userId, text) VALUES ($1, $2) RETURNING *',
       [userId, text]
     );
 
@@ -67,7 +64,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Error sending message." },
+      { error: 'Error sending message.' },
       { status: 500 }
     );
   }

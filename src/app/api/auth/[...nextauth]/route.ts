@@ -1,35 +1,28 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import PgAdapter from "@auth/pg-adapter";
-import { Pool } from "pg";
-import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from "uuid";
+import PgAdapter from '@auth/pg-adapter';
+import { compare } from 'bcrypt';
+import NextAuth, { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { Pool } from 'pg';
+import { v4 as uuidv4 } from 'uuid';
 
-// Correctly type the pool
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-});
-
-pool.on("error", (err) => {
-  console.error("Unexpected error on idle client", err);
-  process.exit(-1);
 });
 
 export const authOptions: NextAuthOptions = {
   adapter: PgAdapter(pool),
   secret: process.env.NEXT_AUTHSECRET,
-  debug: process.env.NODE_ENV === "development",
+  debug: process.env.NODE_ENV === 'development',
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" },
+        username: { label: 'Username', type: 'text' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        // Check for credentials
         if (!credentials?.username || !credentials?.password) {
-          throw new Error("Invalid username or password");
+          throw new Error('Invalid username or password');
         }
 
         try {
@@ -41,33 +34,31 @@ export const authOptions: NextAuthOptions = {
           const user = res.rows[0];
 
           if (!user) {
-            throw new Error("No user found with the given username");
+            throw new Error('No user found with the given username');
           }
 
-          const isValidPassword = await bcrypt.compare(
+          const isValidPassword = await compare(
             credentials.password,
             user.password
           );
 
           if (!isValidPassword) {
-            throw new Error("Invalid password");
+            throw new Error('Invalid password');
           }
 
-          // Return user object matching the expected type
           return { id: user.id, name: user.username, email: user.email };
         } catch (error) {
-          console.error("Error in authorize:", error);
-          // Return null instead of undefined to match the expected type
+          console.error('Error in authorize:', error);
           return null;
         }
       },
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: '/login',
   },
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -90,7 +81,7 @@ export const authOptions: NextAuthOptions = {
         token.tokenString = tokenString;
         token.expiresAt = expiresAt;
       } catch (error) {
-        console.error("Error in jwt callback:", error);
+        console.error('Error in jwt callback:', error);
       }
 
       return token;
@@ -103,7 +94,7 @@ export const authOptions: NextAuthOptions = {
           email: token.email,
         };
       } else {
-        throw new Error("Token or token.id is missing");
+        throw new Error('Token or token.id is missing');
       }
       return session;
     },

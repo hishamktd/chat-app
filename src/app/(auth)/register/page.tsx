@@ -1,16 +1,16 @@
-"use client";
-import React, { useState } from "react";
-import { Typography, TextField, Button, Box, Alert } from "@mui/material";
-import axios from "axios";
+'use client';
+import { Typography, TextField, Button, Box, Alert } from '@mui/material';
+import axios from 'axios';
+import React, { useState } from 'react';
 
-export default function Register() {
+const Register = () => {
   const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,17 +19,16 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setSuccess(false);
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError('Passwords do not match');
       return;
     }
 
     try {
-      // Replace with your registration API endpoint
-      const response = await axios.post("/api/auth/register", {
+      const response = await axios.post('/api/auth/register', {
         username: formData.username,
         email: formData.email,
         password: formData.password,
@@ -38,19 +37,23 @@ export default function Register() {
       if (response.status === 201) {
         setSuccess(true);
         setFormData({
-          username: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
+          username: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
         });
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Something went wrong");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || 'Something went wrong');
+      } else {
+        setError('Something went wrong');
+      }
     }
   };
 
   return (
-    <Box sx={{ maxWidth: 400, margin: "auto", mt: 4 }}>
+    <Box sx={{ maxWidth: 400, margin: 'auto', mt: 4 }}>
       <Typography variant="h4" sx={{ mb: 2 }}>
         Register
       </Typography>
@@ -102,4 +105,6 @@ export default function Register() {
       </form>
     </Box>
   );
-}
+};
+
+export default Register;

@@ -1,0 +1,36 @@
+{
+  /**
+   * Enable format on save
+   */
+  "editor.formatOnSave": true,
+
+  /**
+   * Ensure Prettier is the default formatter
+   */
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  /**
+   * Optional: Set auto-save delay (if auto-save is enabled)
+   */
+  "editor.autoSave": "afterDelay",
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+
+  /**
+   * For ESLint to fix issues on save (if using ESLint)
+   */
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+
+  /**
+   * Optional: Set specific settings for TypeScript or JavaScript
+   */
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "cSpell.words": ["AUTHSECRET", "nextauth", "uuidv"]
+}

@@ -1,47 +1,47 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { Typography, TextField, Button, Box } from "@mui/material";
-import { useRouter } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
+import { Typography, TextField, Button, Box } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { signIn, useSession } from 'next-auth/react';
+import React, { useEffect, useState } from 'react';
 
-export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+const Login = () => {
   const router = useRouter();
   const { data: session } = useSession();
 
-  // Redirect if already logged in
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
   useEffect(() => {
     if (session) {
-      router.push("/chat");
+      router.push('/chat');
     }
   }, [session, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
-    const result = await signIn("credentials", {
+    const result = await signIn('credentials', {
       redirect: false,
       username,
       password,
     });
 
     if (result?.error) {
-      setError("Invalid username or password");
+      setError('Invalid username or password');
     } else {
-      router.push("/chat");
+      router.push('/chat');
     }
   };
 
   if (session) {
-    return null; // or a loading indicator
+    return null;
   }
 
   return (
-    <Box sx={{ maxWidth: 400, margin: "auto", mt: 4 }}>
+    <Box sx={{ maxWidth: 400, margin: 'auto', mt: 4 }}>
       <Typography variant="h4" sx={{ mb: 2 }}>
         Login
       </Typography>
@@ -72,4 +72,6 @@ export default function Login() {
       </form>
     </Box>
   );
-}
+};
+
+export default Login;
