@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import React from 'react';
 
 import '@/styles/globals.css';
 import AppBar from '@/layout/app-bar';
