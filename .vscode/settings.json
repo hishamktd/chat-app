@@ -32,5 +32,8 @@
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["AUTHSECRET", "nextauth", "userid", "uuidv"]
+  "cSpell.words": ["AUTHSECRET", "nextauth", "userid", "uuidv"],
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }

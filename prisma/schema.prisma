@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model accounts {
@@ -44,7 +45,7 @@ model user_tokens {
 
 model users {
   id                 Int                  @id @default(autoincrement())
-  username           String               @unique @db.VarChar(255) 
+  username           String               @unique @db.VarChar(255)
   email              String               @unique @db.VarChar(255)
   password           String               @db.VarChar(255)
   created_at         DateTime?            @default(now()) @db.Timestamp(6)

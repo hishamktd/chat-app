@@ -35,9 +35,19 @@ const ChatPage = () => {
   };
 
   const fetchMessages = async () => {
-    const response = await fetch('/api/chat-room');
-    const data: TMessage[] = await response.json();
-    setMessages(data);
+    try {
+      const response = await fetch('/api/chat-room');
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: TMessage[] = await response.json();
+      setMessages(data ?? []);
+    } catch (error) {
+      console.error('Failed to fetch messages:', error);
+      setMessages([]);
+    }
   };
 
   useEffect(() => {
@@ -55,19 +65,20 @@ const ChatPage = () => {
         sx={{ maxHeight: 400, overflowY: 'auto', mb: 2, p: 2 }}
       >
         <List>
-          {messages.map((message) => (
-            <ListItem key={message.id}>
-              <Box>
-                <Typography variant="subtitle2">
-                  {message.user.username} -{' '}
-                  <span style={{ color: 'gray' }}>
-                    {dayjs(message.created_at).format('HH:mm A')}
-                  </span>
-                </Typography>
-                <Typography variant="body1">{message.text}</Typography>
-              </Box>
-            </ListItem>
-          ))}
+          {messages &&
+            messages?.map((message) => (
+              <ListItem key={message?.id}>
+                <Box>
+                  <Typography variant="subtitle2">
+                    {message?.user?.username} -{' '}
+                    <span style={{ color: 'gray' }}>
+                      {dayjs(message.created_at).format('HH:mm A')}
+                    </span>
+                  </Typography>
+                  <Typography variant="body1">{message.text}</Typography>
+                </Box>
+              </ListItem>
+            ))}
         </List>
       </Paper>
 
