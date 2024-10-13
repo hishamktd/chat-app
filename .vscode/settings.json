@@ -20,7 +20,7 @@
    * For ESLint to fix issues on save (if using ESLint)
    */
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": true
   },
 
   /**
