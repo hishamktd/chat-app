@@ -8,11 +8,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from './[...nextauth]/route';
 
 // Use it in server contexts
-export function auth(
+export const auth = (
   ...args:
     | [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']]
     | [NextApiRequest, NextApiResponse]
     | []
-) {
+) => {
   return getServerSession(...args, authOptions);
-}
+};

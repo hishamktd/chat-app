@@ -20,7 +20,7 @@
    * For ESLint to fix issues on save (if using ESLint)
    */
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
 
   /**
@@ -32,5 +32,5 @@
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["AUTHSECRET", "nextauth", "uuidv"]
+  "cSpell.words": ["AUTHSECRET", "nextauth", "userid", "uuidv"]
 }

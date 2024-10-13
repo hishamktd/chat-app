@@ -1,48 +1,42 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { Pool } from 'pg';
 
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { getUserById } from '@/app/api/services/userService';
+import prisma from '@/lib/prisma';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+import { getUserById } from '../services/userService';
 
-export async function GET() {
+export const GET = async () => {
   try {
-    const result = await pool.query(`
-      SELECT cm.id, 
-             cm.userId, 
-             cm.text, 
-             cm.created_at 
-      FROM chat_room_messages cm 
-      ORDER BY cm.created_at ASC
-    `);
+    const messages = await prisma.chat_room_messages.findMany({
+      orderBy: {
+        created_at: 'asc',
+      },
+    });
 
-    const messages = await Promise.all(
-      result.rows.map(async (row) => {
-        const user = await getUserById(row.userid);
+    const enrichedMessages = await Promise.all(
+      messages.map(async (message) => {
+        const user = await getUserById(message.userid);
         return {
-          id: row.id,
+          id: message.id,
           user: user ?? null,
-          text: row.text,
-          created_at: row.created_at,
+          text: message.text,
+          created_at: message.created_at,
         };
       })
     );
 
-    return NextResponse.json(messages);
+    return NextResponse.json(enrichedMessages);
   } catch (error) {
-    console.error(error);
+    console.error('Error retrieving messages:', error);
     return NextResponse.json(
       { error: 'Error retrieving messages.' },
       { status: 500 }
     );
   }
-}
+};
 
-export async function POST(req: Request) {
+export const POST = async (req: Request) => {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user?.id) {
@@ -53,19 +47,19 @@ export async function POST(req: Request) {
   const userId = session.user.id;
 
   try {
-    const result = await pool.query(
-      'INSERT INTO chat_room_messages (userId, text) VALUES ($1, $2) RETURNING *',
-      [userId, text]
-    );
-
-    const newMessage = result.rows[0];
+    const newMessage = await prisma.chat_room_messages.create({
+      data: {
+        userid: userId,
+        text,
+      },
+    });
 
     return NextResponse.json(newMessage);
   } catch (error) {
-    console.error(error);
+    console.error('Error sending message:', error);
     return NextResponse.json(
       { error: 'Error sending message.' },
       { status: 500 }
     );
   }
-}
+};

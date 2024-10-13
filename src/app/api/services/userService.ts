@@ -1,25 +1,22 @@
-import { Pool } from 'pg';
-
+import prisma from '@/lib/prisma';
 import { TUser } from '@/types/user';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-export async function getUserById(userId: string): Promise<TUser | null> {
+export const getUserById = async (
+  userId: number | null
+): Promise<TUser | null> => {
   try {
-    const result = await pool.query(
-      `SELECT id, username, email FROM users WHERE id = $1`,
-      [userId]
-    );
+    const user = await prisma.users.findUnique({
+      where: { id: Number(userId) },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+      },
+    });
 
-    if (result.rows.length === 0) {
-      return null;
-    }
-
-    return result.rows[0];
+    return user || null;
   } catch (error) {
     console.error('Error retrieving user:', error);
     throw new Error('Could not retrieve user');
   }
-}
+};

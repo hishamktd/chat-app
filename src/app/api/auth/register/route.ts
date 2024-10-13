@@ -1,42 +1,43 @@
 import { hash } from 'bcrypt';
 import { NextResponse } from 'next/server';
-import { Pool } from 'pg';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+import prisma from '@/lib/prisma';
 
-export async function POST(req: Request) {
+export const POST = async (req: Request) => {
   try {
     const { username, email, password } = await req.json();
 
-    const existingUser = await pool.query(
-      `SELECT id FROM users WHERE email = $1`,
-      [email]
-    );
+    const existingUser = await prisma.users.findUnique({
+      where: { email },
+    });
 
-    if (existingUser?.rowCount && existingUser?.rowCount > 0) {
+    if (existingUser) {
       return NextResponse.json(
         { message: 'User already exists' },
         { status: 400 }
       );
     }
-
     const hashedPassword = await hash(password, 10);
 
-    await pool.query(
-      `INSERT INTO users (username, email, password) VALUES ($1, $2, $3)`,
-      [username, email, hashedPassword]
-    );
+    await prisma.users.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+      },
+    });
 
     return NextResponse.json(
       { message: 'User created successfully' },
       { status: 201 }
     );
-  } catch {
+  } catch (error) {
+    console.error('Error creating user:', error);
     return NextResponse.json(
       { message: 'Internal Server Error' },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
-}
+};
